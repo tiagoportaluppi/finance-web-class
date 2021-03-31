@@ -13,6 +13,7 @@ export class UserController {
     const schema = yup.object().shape({
       name: yup.string().required('Name is required'),
       email: yup.string().email('Invalid e-mail').required('E-mail is required'),
+      password: yup.string().required('Password is required'),
     });
 
     try {
@@ -26,7 +27,7 @@ export class UserController {
     const userAlreadyExists = await usersRepository.findOne({ email });
 
     if (userAlreadyExists) {
-      throw new AppError('Usuário já existe!');
+      throw new AppError('Usuário já existe!', 400);
     }
 
     const salt = bcrypt.genSaltSync();
@@ -38,6 +39,8 @@ export class UserController {
     });
 
     await usersRepository.save(user);
+
+    delete user?.password;
 
     return response.status(200).send({ message: 'Usuário criado com sucesso', user });
   }

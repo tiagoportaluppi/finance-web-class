@@ -35,7 +35,7 @@ export class CategoryController {
 
     const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    await categoriesRepository.update(parseInt(categoryId), updatedData);
+    await categoriesRepository.save({ id: parseInt(categoryId), ...updatedData });
 
     return response.status(200).json({ message: 'Categoria atualizada com sucesso' });
   }

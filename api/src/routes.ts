@@ -16,10 +16,10 @@ export default ({ auth }) => {
   router.post('/users', userController.create);
   router.get('/me', auth.authenticate(), userController.getById);
 
-  router.get('/categories', categoryController.getAll);
-  router.post('/categories', categoryController.create);
-  router.patch('/categories/:categoryId', categoryController.update);
-  router.delete('/categories/:categoryId', categoryController.delete);
+  router.get('/categories', auth.authenticate(), categoryController.getAll);
+  router.post('/categories', auth.authenticate(), categoryController.create);
+  router.patch('/categories/:categoryId', auth.authenticate(), categoryController.update);
+  router.delete('/categories/:categoryId', auth.authenticate(), categoryController.delete);
 
   return router;
 };
