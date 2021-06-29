@@ -67,6 +67,7 @@ jobs:
           Host server
             HostName $SSH_HOST
             User $SSH_USER
+            Port 1022
             IdentityFile ~/.ssh/id_ed25519
             StrictHostKeyChecking no
           END
@@ -76,7 +77,7 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Test SSH command
-        run: ssh server 'ls -a' -o debug
+        run: ssh server 'ls -a'
 
       # - name: Check out the source
       #   run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
