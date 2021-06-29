@@ -47,4 +47,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.PROJECT }}_${{ steps.get_stage.outputs.STAGE }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/${{ env.PROJECT }}_${{ steps.get_stage.outputs.STAGE }}:${{ github.ref }}
+            ghcr.io/${{ github.repository }}/${{ env.PROJECT }}_${{ steps.get_stage.outputs.STAGE }}:${{ github.base_ref }}
