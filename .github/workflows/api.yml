@@ -58,14 +58,16 @@ jobs:
 
       - name: Configure SSH
         run: |
+          eval $(ssh-agent -s)
           mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/server.key
-          chmod 600 ~/.ssh/server.key
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-add ~/.ssh/id_ed25519
           cat >>~/.ssh/config <<END
           Host server
             HostName $SSH_HOST
             User $SSH_USER
-            IdentityFile ~/.ssh/server.key
+            IdentityFile ~/.ssh/id_ed25519
             StrictHostKeyChecking no
           END
         env:
