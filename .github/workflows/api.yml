@@ -49,3 +49,17 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ steps.get_stage.outputs.STAGE }}
+
+  deploy:
+    # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: [ubuntu-latest]
+    steps:
+      # - uses: actions/checkout@v2
+
+      - name: ls -a via ssh
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: ls -a
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          password: ${{ secrets.SERVER_PASSWD }}
