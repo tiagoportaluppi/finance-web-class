@@ -15,6 +15,8 @@ COPY ./build $HOME/web/build
 
 FROM nginx:alpine
 
+ENV HOME=/home/app
+
 WORKDIR /usr/share/nginx/html
 
 RUN rm -rf ./*
