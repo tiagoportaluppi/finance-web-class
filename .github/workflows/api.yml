@@ -56,14 +56,14 @@ jobs:
     steps:
       # - uses: actions/checkout@v2
 
-      # - name: executing remote ssh commands using ssh key
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: 2201
-      #     script: ls -a
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 2201
+          script: ls -a
 
       - name: Configure SSH
         run: |
