@@ -92,7 +92,7 @@ jobs:
       #     SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Test SSH command
-        run: ssh -o StrictHostKeyChecking=no server 'ls -a'
+        run: ssh -o StrictHostKeyChecking=no -p 2201 univates@177.44.248.69 'ls -a'
 
       # - name: Check out the source
       #   run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
