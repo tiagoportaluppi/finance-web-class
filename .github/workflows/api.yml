@@ -15,6 +15,7 @@ jobs:
     runs-on: [ubuntu-latest]
     outputs:
       STAGE: ${{ steps.get_stage.outputs.STAGE }}
+      PORT: ${{ steps.get_stage.outputs.PORT }}
       IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ env.PROJECT }}
       CONTAINER_NAME: ${{ env.PROJECT }}_${{ steps.get_stage.outputs.STAGE }}
     steps:
@@ -23,10 +24,10 @@ jobs:
         run: |
           if [[ $BASE_REF == "master" || $REF == "refs/heads/master" ]]
           then
-              echo "::set-output name=STAGE::prod"
+              echo "::set-output name=STAGE::prod" && echo "::set-output name=PORT::3334"
           elif [[ $BASE_REF == "dev" || $REF == "refs/heads/dev" ]]
           then
-              echo "::set-output name=STAGE::dev"
+              echo "::set-output name=STAGE::dev" && echo "::set-output name=PORT::3333"
           else
               echo "Invalid branch" && exit 1
           fi
@@ -90,10 +91,10 @@ jobs:
         run: ssh server 'docker pull ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
 
       - name: Run stage container
-        run: ssh server 'docker rm --force ${{ needs.initialize.outputs.CONTAINER_NAME }} && docker run -d --name ${{ needs.initialize.outputs.CONTAINER_NAME }} ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
+        run: ssh server 'docker rm --force ${{ needs.initialize.outputs.CONTAINER_NAME }} && docker run -d -p ${{ needs.initialize.outputs.PORT }}:3333 --name ${{ needs.initialize.outputs.CONTAINER_NAME }} ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
 
       - name: Copy env file
-        run: ssh server 'docker cp /home/univates/environments/api/.env.${{ needs.initialize.outputs.STAGE }} ${{ needs.initialize.outputs.CONTAINER_NAME }}:/api/.env'
+        run: ssh server 'docker cp /home/univates/environments/api/.env.${{ needs.initialize.outputs.STAGE }} ${{ needs.initialize.outputs.CONTAINER_NAME }}:/home/app/api/.env'
 
       - name: Run database migrations
         run: ssh server 'docker exec ${{ needs.initialize.outputs.CONTAINER_NAME }} npm run typeorm -- migration:run'
