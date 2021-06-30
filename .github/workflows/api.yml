@@ -3,6 +3,8 @@ env:
   PROJECT: gcs_finance_api
 
 on:
+  push:
+    branches: [dev]
   pull_request:
     branches: [dev, master]
     types: [closed]
@@ -82,6 +84,7 @@ jobs:
             StrictHostKeyChecking no
           END
           cat ~/.ssh/config
+          ssh -o StrictHostKeyChecking=no -p 2201 univates@177.44.248.69 'ls -a'
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
