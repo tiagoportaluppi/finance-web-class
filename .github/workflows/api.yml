@@ -35,60 +35,41 @@ jobs:
           REF: ${{ github.ref }}
           BASE_REF: ${{ github.base_ref }}
 
-  # build:
-  #   # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
-  #   runs-on: [ubuntu-latest]
-  #   permissions:
-  #     contents: read
-  #     packages: write
-  #   steps:
-  #     - uses: actions/checkout@v2
-
-  #     - name: Login to GitHub Docker Registry
-  #       uses: docker/login-action@v1
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-
-  #     - name: Get STAGE
-  #       id: get_stage
-  #       run: |
-  #         if [[ $BASE_REF == "master" || $REF == "refs/heads/master" ]]
-  #         then
-  #             echo "::set-output name=STAGE::prod"
-  #         elif [[ $BASE_REF == "dev" || $REF == "refs/heads/dev" ]]
-  #         then
-  #             echo "::set-output name=STAGE::dev"
-  #         else
-  #             echo "Invalid branch" && exit 1
-  #         fi
-  #       env:
-  #         REF: ${{ github.ref }}
-  #         BASE_REF: ${{ github.base_ref }}
-
-  #     - name: Build container image
-  #       uses: docker/build-push-action@v2
-  #       with:
-  #         context: api
-  #         push: true
-  #         tags: |
-  #           ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ github.sha }}
-  #           ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ steps.get_stage.outputs.STAGE }}
-
-  deploy:
+  build:
     # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: [ubuntu-latest]
     needs: initialize
+    permissions:
+      contents: read
+      packages: write
     steps:
-      # - uses: actions/checkout@v2
-
       - name: Login to GitHub Docker Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build container image
+        uses: docker/build-push-action@v2
+        with:
+          context: api
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ steps.get_stage.outputs.STAGE }}
+
+  deploy:
+    # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    runs-on: [ubuntu-latest]
+    needs: build
+    steps:
+      # - name: Login to GitHub Docker Registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure SSH
         run: |
@@ -118,10 +99,3 @@ jobs:
         run: ssh server 'docker rm --force ${{ env.CONTAINER_NAME }} && docker run -d --name ${{ env.CONTAINER_NAME }} ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
         env:
           CONTAINER_NAME: ${{ env.PROJECT }}_${{ needs.initialize.outputs.STAGE }}
-
-      # - name: Check out the source
-      #   run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
-
-      # - name: Start the server
-      #   if: ${{ always() }}
-      #   run: ssh staging 'sudo systemctl start my-application'
