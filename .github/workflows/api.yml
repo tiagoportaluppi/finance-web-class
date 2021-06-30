@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  config:
+  initialize:
     runs-on: [ubuntu-latest]
     outputs:
       STAGE: ${{ steps.get_stage.outputs.STAGE }}
@@ -79,7 +79,7 @@ jobs:
   deploy:
     # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: [ubuntu-latest]
-    needs: config
+    needs: initialize
     steps:
       # - uses: actions/checkout@v2
 
@@ -112,12 +112,12 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Deploy image
-        run: ssh server 'docker pull ${{ needs.config.outputs.IMAGE_NAME }}'
+        run: ssh server 'docker pull ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
 
       - name: Stop and run container
-        run: ssh server 'docker rm --force $CONTAINER_NAME && docker run -d --name $CONTAINER_NAME ${{ needs.config.outputs.IMAGE_NAME }}'
+        run: ssh server 'docker rm --force $CONTAINER_NAME && docker run -d --name $CONTAINER_NAME ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
         env:
-          CONTAINER_NAME: ${{ env.PROJECT }}_${{ needs.config.outputs.STAGE }}
+          CONTAINER_NAME: ${{ env.PROJECT }}_${{ needs.initialize.outputs.STAGE }}
 
       # - name: Check out the source
       #   run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
