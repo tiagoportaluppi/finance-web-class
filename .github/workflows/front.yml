@@ -23,10 +23,10 @@ jobs:
         run: |
           if [[ $BASE_REF == "master" || $REF == "refs/heads/master" ]]
           then
-              echo "::set-output name=STAGE::prod" & echo "::set-output name=PORT::80"
+              echo "::set-output name=STAGE::prod" && echo "::set-output name=PORT::80"
           elif [[ $BASE_REF == "dev" || $REF == "refs/heads/dev" ]]
           then
-              echo "::set-output name=STAGE::dev" & echo "::set-output name=PORT::8081"
+              echo "::set-output name=STAGE::dev" && echo "::set-output name=PORT::8081"
           else
               echo "Invalid branch" && exit 1
           fi
@@ -50,10 +50,10 @@ jobs:
           node-version: 12.x
 
       - name: Install dependencies
-        run: npm i -g env-cmd && npm i
+        run: cd web && npm i -g env-cmd && npm i
 
       - name: Run build script
-        run: npm run build:${{ needs.initialize.outputs.STAGE }}
+        run: cd web && npm run build:${{ needs.initialize.outputs.STAGE }}
 
       - name: Login to GitHub Docker Registry
         uses: docker/login-action@v1
