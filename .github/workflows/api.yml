@@ -56,37 +56,38 @@ jobs:
     steps:
       # - uses: actions/checkout@v2
 
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 2201
-          script: ls -a
+      # - name: executing remote ssh commands using ssh key
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: 2201
+      #     script: ls -a
 
-      # - name: Configure SSH
-      #   run: |
-      #     eval $(ssh-agent -s)
-      #     mkdir -p ~/.ssh/
-      #     echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-      #     chmod 600 ~/.ssh/id_ed25519
-      #     ssh-add ~/.ssh/id_ed25519
-      #     cat >>~/.ssh/config <<END
-      #     Host server
-      #       HostName $SSH_HOST
-      #       User $SSH_USER
-      #       Port 2201
-      #       IdentityFile ~/.ssh/id_ed25519
-      #       StrictHostKeyChecking no
-      #     END
-      #   env:
-      #     SSH_USER: ${{ secrets.SSH_USER }}
-      #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     SSH_HOST: ${{ secrets.SSH_HOST }}
+      - name: Configure SSH
+        run: |
+          eval $(ssh-agent -s)
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-add ~/.ssh/id_ed25519
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          cat >>~/.ssh/config <<END
+          Host server
+            HostName $SSH_HOST
+            User $SSH_USER
+            Port 2201
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
 
-      # - name: Test SSH command
-      #   run: ssh server 'ls -a'
+      - name: Test SSH command
+        run: ssh server 'ls -a'
 
       # - name: Check out the source
       #   run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
