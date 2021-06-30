@@ -58,15 +58,6 @@ jobs:
     steps:
       # - uses: actions/checkout@v2
 
-      # - name: executing remote ssh commands using ssh key
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USER }}
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: 2201
-      #     script: ls -a
-
       - name: Configure SSH
         run: |
           eval $(ssh-agent -s)
@@ -79,7 +70,6 @@ jobs:
           Host server
             HostName $SSH_HOST
             User $SSH_USER
-            Port 2201
             IdentityFile ~/.ssh/id_ed25519
             StrictHostKeyChecking no
           END
@@ -87,11 +77,6 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
-
-      # - name: SSH known hosts
-      #   run: ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
-      #   env:
-      #     SSH_HOST: ${{ secrets.SSH_HOST }}
 
       - name: Test SSH command
         run: ssh server 'ls -a'
