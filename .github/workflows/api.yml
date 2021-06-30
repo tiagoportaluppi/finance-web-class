@@ -115,7 +115,7 @@ jobs:
         run: ssh server 'docker pull ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
 
       - name: Run stage container
-        run: ssh server 'docker rm --force ${{ CONTAINER_NAME }} && docker run -d --name ${{ CONTAINER_NAME }} ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
+        run: ssh server 'docker rm --force "$CONTAINER_NAME" && docker run -d --name "$CONTAINER_NAME" ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
         env:
           CONTAINER_NAME: ${{ env.PROJECT }}_${{ needs.initialize.outputs.STAGE }}
 
