@@ -18,7 +18,7 @@ const Categories = () => {
       dataIndex: 'color',
       width: 100,
       render: (record) => (
-        <div className="category-circle" style={{ backgroundColor: `#${record}` }} />
+        <div className="category-circle" style={{ backgroundColor: record }} />
       ),
     },
     {
