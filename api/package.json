@@ -7,8 +7,8 @@
     "test": "NODE_ENV=test jest -i",
     "start": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
     "typeorm": "ts-node-dev node_modules/typeorm/cli.js",
-    "db:create": "ts-node-dev ./node_modules/typeorm-extension/dist/cli/index.js db:create",
-    "db:drop": "ts-node-dev ./node_modules/typeorm-extension/dist/cli/index.js db:drop"
+    "db:create": "ts-node-dev ./node_modules/typeorm-extension/dist/cli/index.js -f .env db:create",
+    "db:drop": "ts-node-dev ./node_modules/typeorm-extension/dist/cli/index.js -f .env db:drop"
   },
   "keywords": [],
   "author": "Tiago Portaluppi",
