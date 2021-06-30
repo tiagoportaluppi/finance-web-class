@@ -32,7 +32,7 @@ const Wrapper = ({ children }) => {
         <UserInfo />
       </Header>
       <Content style={{ padding: '0 50px' }}>{children}</Content>
-      <Footer style={{ textAlign: 'center' }}>Finance app ©2021</Footer>
+      <Footer style={{ textAlign: 'center' }}>Finance app ©2021.</Footer>
     </Layout>
   );
 };
