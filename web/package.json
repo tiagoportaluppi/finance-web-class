@@ -30,7 +30,7 @@
     "start": "env-cmd -f environments/.env.development craco start",
     "build": "craco --expose-gc --max-old-space-size=4096 build",
     "build:dev": "env-cmd -f environments/.env.development npm run build",
-    "build:master": "env-cmd -f environments/.env.production npm run build",
+    "build:prod": "env-cmd -f environments/.env.production npm run build",
     "test": "craco test",
     "eject": "react-scripts eject"
   },
