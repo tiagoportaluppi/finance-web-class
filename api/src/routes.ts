@@ -11,10 +11,10 @@ export default ({ auth }) => {
   const userController = new UserController();
   const categoryController = new CategoryController();
 
-  router.post('/auth', authController.signin);
+  router.post('/auth/signin', authController.signin);
 
   router.post('/users', userController.create);
-  router.get('/me', auth.authenticate(), userController.getById);
+  router.get('/users/me', auth.authenticate(), userController.getById);
 
   router.get('/categories', auth.authenticate(), categoryController.getAll);
   router.post('/categories', auth.authenticate(), categoryController.create);

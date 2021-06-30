@@ -64,13 +64,6 @@ jobs:
     runs-on: [ubuntu-latest]
     needs: [initialize, build]
     steps:
-      # - name: Login to GitHub Docker Registry
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.actor }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Configure SSH
         run: |
           eval $(ssh-agent -s)
