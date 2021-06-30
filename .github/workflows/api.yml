@@ -11,7 +11,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  # build-and-push-image:
+  config:
+    runs-on: [ubuntu-latest]
+    outputs:
+      STAGE: ${{ steps.get_stage.outputs.STAGE }}
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ env.PROJECT }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get STAGE
+        id: get_stage
+        run: |
+          if [[ $BASE_REF == "master" || $REF == "refs/heads/master" ]]
+          then
+              echo "::set-output name=STAGE::prod"
+          elif [[ $BASE_REF == "dev" || $REF == "refs/heads/dev" ]]
+          then
+              echo "::set-output name=STAGE::dev"
+          else
+              echo "Invalid branch" && exit 1
+          fi
+        env:
+          REF: ${{ github.ref }}
+          BASE_REF: ${{ github.base_ref }}
+
+  # build:
   #   # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
   #   runs-on: [ubuntu-latest]
   #   permissions:
@@ -55,6 +79,7 @@ jobs:
   deploy:
     # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: [ubuntu-latest]
+    needs: config
     steps:
       # - uses: actions/checkout@v2
 
@@ -86,9 +111,13 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
 
-      - name: Pull and run container
-        run: |
-          ssh server 'docker pull ghcr.io/${{ github.repository }}/${{ env.PROJECT }}'
+      - name: Deploy image
+        run: ssh server 'docker pull ${{ needs.config.outputs.IMAGE_NAME }}'
+
+      - name: Stop and run container
+        run: ssh server 'docker rm --force $CONTAINER_NAME && docker run -d --name $CONTAINER_NAME ${{ needs.config.outputs.IMAGE_NAME }}'
+        env:
+          CONTAINER_NAME: ${{ env.PROJECT }}_${{ needs.config.outputs.STAGE }}
 
       # - name: Check out the source
       #   run: ssh staging 'cd my-application && git fetch && git reset --hard origin/master'
