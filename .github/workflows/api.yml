@@ -17,8 +17,6 @@ jobs:
       STAGE: ${{ steps.get_stage.outputs.STAGE }}
       IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ env.PROJECT }}
     steps:
-      - uses: actions/checkout@v2
-
       - name: Get STAGE
         id: get_stage
         run: |
@@ -43,6 +41,8 @@ jobs:
       contents: read
       packages: write
     steps:
+      - uses: actions/checkout@v2
+
       - name: Login to GitHub Docker Registry
         uses: docker/login-action@v1
         with:
