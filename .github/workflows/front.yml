@@ -1,6 +1,6 @@
-name: Build, test and deploy (api)
+name: Build, test and deploy (front)
 env:
-  PROJECT: gcs_finance_api
+  PROJECT: gcs_finance_web
 
 on:
   push:
@@ -17,17 +17,16 @@ jobs:
       STAGE: ${{ steps.get_stage.outputs.STAGE }}
       PORT: ${{ steps.get_stage.outputs.PORT }}
       IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ env.PROJECT }}
-      CONTAINER_NAME: ${{ env.PROJECT }}_${{ steps.get_stage.outputs.STAGE }}
     steps:
       - name: Get STAGE
         id: get_stage
         run: |
           if [[ $BASE_REF == "master" || $REF == "refs/heads/master" ]]
           then
-              echo "::set-output name=STAGE::prod" && echo "::set-output name=PORT::3334"
+              echo "::set-output name=STAGE::prod" && echo "::set-output name=PORT::80"
           elif [[ $BASE_REF == "dev" || $REF == "refs/heads/dev" ]]
           then
-              echo "::set-output name=STAGE::dev" && echo "::set-output name=PORT::3333"
+              echo "::set-output name=STAGE::dev" && echo "::set-output name=PORT::8081"
           else
               echo "Invalid branch" && exit 1
           fi
@@ -45,6 +44,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12.x
+
+      - name: Install dependencies
+        run: cd web && npm i -g env-cmd && npm i
+
+      - name: Run build script
+        run: cd web && npm run build:${{ needs.initialize.outputs.STAGE }}
+
       - name: Login to GitHub Docker Registry
         uses: docker/login-action@v1
         with:
@@ -55,7 +65,7 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v2
         with:
-          context: api
+          context: web
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ github.sha }}
@@ -91,10 +101,6 @@ jobs:
         run: ssh server 'docker pull ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
 
       - name: Run stage container
-        run: ssh server 'docker rm --force ${{ needs.initialize.outputs.CONTAINER_NAME }} && docker run -d -p ${{ needs.initialize.outputs.PORT }}:3333 --name ${{ needs.initialize.outputs.CONTAINER_NAME }} ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
-
-      - name: Copy env file
-        run: ssh server 'docker cp /home/univates/environments/api/.env.${{ needs.initialize.outputs.STAGE }} ${{ needs.initialize.outputs.CONTAINER_NAME }}:/home/app/api/.env'
-
-      - name: Run database migrations
-        run: ssh server 'docker exec ${{ needs.initialize.outputs.CONTAINER_NAME }} npm run typeorm -- migration:run'
+        run: ssh server 'docker rm --force ${{ env.CONTAINER_NAME }} && docker run -d -p ${{ needs.initialize.outputs.PORT }}:8081 --name ${{ env.CONTAINER_NAME }} ${{ needs.initialize.outputs.IMAGE_NAME }}:${{ needs.initialize.outputs.STAGE }}'
+        env:
+          CONTAINER_NAME: ${{ env.PROJECT }}_${{ needs.initialize.outputs.STAGE }}

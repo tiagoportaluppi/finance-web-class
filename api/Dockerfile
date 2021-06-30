@@ -7,5 +7,5 @@ WORKDIR $HOME/api
 RUN npm update && npm install
 RUN npm i -g nodemon dotenv
 
-EXPOSE 3001 3000
+# EXPOSE 3333 3334
 CMD ["npm", "start"]

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import express, { NextFunction, Request, Response } from 'express';
+import cors from 'cors';
 import 'express-async-errors';
 import createConnection from './database';
 import routes from './routes';
@@ -10,6 +11,8 @@ const app = express();
 
 createConnection();
 app.use(express.json());
+
+app.use(cors());
 
 const auth = authorization();
 app.use(auth.initialize());
