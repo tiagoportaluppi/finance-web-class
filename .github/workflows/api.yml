@@ -57,7 +57,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ github.sha }}
-            ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ steps.get_stage.outputs.STAGE }}
+            ghcr.io/${{ github.repository }}/${{ env.PROJECT }}:${{ needs.initialize.outputs.STAGE }}
 
   deploy:
     # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
