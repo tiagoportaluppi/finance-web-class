@@ -58,7 +58,7 @@ describe('Users', () => {
   });
 
   it('Should be able to get a logged user', async () => {
-    const response = await request(app).get('/me').set('Authorization', `Bearer ${accessToken}`);
+    const response = await request(app).get('/users/me').set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('id');
