@@ -66,12 +66,12 @@ jobs:
         run: cd api && npm run typeorm -- migration:run
 
       - name: Run unit tests
-        run: cd api && npm run test
+        run: cd api && npm run test > /dev/null 2>&1 &
 
   build:
     # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: [ubuntu-latest]
-    needs: [initialize]
+    needs: [initialize, test]
     permissions:
       contents: read
       packages: write
