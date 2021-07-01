@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest --detectOpenHandles",
+    "test": "NODE_ENV=test jest --passWithNoTests --silent --noStackTrace --runInBand",
+    "test:ci": "npm test --maxWorkers=2",
     "start": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
     "typeorm": "ts-node-dev node_modules/typeorm/cli.js"
   },
