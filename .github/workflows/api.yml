@@ -71,7 +71,7 @@ jobs:
   build:
     # if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: [ubuntu-latest]
-    needs: [initialize, test]
+    needs: [initialize]
     permissions:
       contents: read
       packages: write
