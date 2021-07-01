@@ -41,7 +41,9 @@ jobs:
       postgres:
         image: postgres
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: finance-test
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -49,7 +51,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps tcp port 5432 on service container to the host
           - 5432:5432
 
     steps:
@@ -61,8 +62,8 @@ jobs:
       - name: Set test environments
         run: cp api/.env.testing api/.env
 
-      - name: Setup database
-        run: cd api && npm run db:create
+      # - name: Setup database
+      #   run: cd api && npm run db:create
 
       - name: Run migrations
         run: cd api && npm run typeorm -- migration:run
