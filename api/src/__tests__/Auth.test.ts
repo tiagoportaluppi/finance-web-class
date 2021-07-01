@@ -25,7 +25,7 @@ describe('Auth', () => {
 
     await request(app).post('/users').send(userTest);
 
-    const response = await request(app).post('/auth').send({
+    const response = await request(app).post('/auth/signin').send({
       email: userTest.email,
       password: userTest.password,
     });
@@ -40,7 +40,7 @@ describe('Auth', () => {
       password: 'passwd',
     };
 
-    const response = await request(app).post('/auth').send(credentials);
+    const response = await request(app).post('/auth/signin').send(credentials);
 
     expect(response.status).toBe(401);
   });

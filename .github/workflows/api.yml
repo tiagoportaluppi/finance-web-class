@@ -62,12 +62,6 @@ jobs:
       - name: Set test environments
         run: cp api/.env.testing api/.env
 
-      - name: Teste
-        run: cat api/.env
-
-      # - name: Setup database
-      #   run: cd api && npm run db:create
-
       - name: Run migrations
         run: cd api && npm run typeorm -- migration:run
 
