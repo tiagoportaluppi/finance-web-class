@@ -75,7 +75,7 @@ const Categories = () => {
           padding: '25px 0 15px 0',
         }}
       >
-        <Title level={4}>Categorias</Title>
+        <Title level={4}>Categorias - alterado</Title>
         <Button
           shape="round"
           type="primary"
