@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest -i",
+    "test": "NODE_ENV=test jest --detectOpenHandles",
     "start": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
-    "typeorm": "ts-node-dev node_modules/typeorm/cli.js",
-    "db:create": "ts-node-dev ./node_modules/typeorm-extension/dist/cli/index.js -f .env db:create",
-    "db:drop": "ts-node-dev ./node_modules/typeorm-extension/dist/cli/index.js -f .env db:drop"
+    "typeorm": "ts-node-dev node_modules/typeorm/cli.js"
   },
   "keywords": [],
   "author": "Tiago Portaluppi",
@@ -25,7 +23,6 @@
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.31",
-    "typeorm-extension": "^0.2.6",
     "uuid": "^8.3.2",
     "yup": "^0.32.9"
   },
